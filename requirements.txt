@@ -1,0 +1,4 @@
+anthropic==0.100.0
+fastapi==0.120.1
+uvicorn==0.37.0
+pytest==8.4.2
