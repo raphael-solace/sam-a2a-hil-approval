@@ -34,7 +34,7 @@ The tests assert:
 
 ## Real-model local service
 
-The exact app was launched with Uvicorn and a real Claude model. Five consecutive full cycles passed.
+The exact app was launched with Uvicorn and a real Claude model. One initial full cycle passed, then five consecutive full cycles passed after hardening decision parsing.
 
 Each cycle verified:
 
@@ -65,7 +65,7 @@ This confirms that running the synchronous model SDK call through `asyncio.to_th
 
 ## Live Solace Agent Mesh test
 
-The exact public source was built as image `a2a-hil-approval:1.0.1` for `linux/amd64` and deployed to the test SAM environment.
+The exact public source was built as image `a2a-hil-approval:1.0.1` for `linux/amd64` and deployed to the test SAM environment. The SHA-256 of `/app/app.py` inside the running pod matched the public checkout exactly: `aa6f90423dbfb058536887e78c0bd3892e9b5a8e0a65b17f95d0f28dfc50eadc`.
 
 Observed pod state:
 
@@ -114,4 +114,4 @@ The proxy limit should still be raised for clean WebUI persistence. It does not 
 
 ## Confidence statement
 
-The reference implementation is verified for the demonstrated single-pending-approval-per-context pattern on SAM 2.1.149. It is not represented as a production authorization service. Production use still requires durable pending state, structured signed decisions, identity binding, expiry, idempotency, execution-time authorization, and audit logging.
+The reference implementation is verified for the demonstrated single-pending-approval-per-context pattern on SAM 2.1.149. Its approve/reject execution gate works with the tested proxy and SAM Chat flow. It is not represented as a production authorization service. Production use still requires durable pending state, structured signed decisions, identity binding, expiry, idempotency, execution-time authorization, and audit logging.
