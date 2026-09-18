@@ -21,6 +21,15 @@ def message(context, text):
     return {"contextId": context, "parts": [{"kind": "text", "text": text}]}
 
 
+def test_decision_classifier_requires_unambiguous_intent():
+    for text in ("yes", "yes, approve", "approve", "go ahead", "please proceed"):
+        assert app.classify_decision(text) is True
+    for text in ("no", "deny", "don't approve", "do not run", "please don't execute"):
+        assert app.classify_decision(text) is False
+    for text in ("maybe", "can you explain?", "I don't know", "not sure"):
+        assert app.classify_decision(text) is None
+
+
 def test_approval_and_denial(monkeypatch):
     calls = []
 

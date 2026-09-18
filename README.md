@@ -79,7 +79,7 @@ External A2A agent
 ```bash
 python -m venv .venv
 . .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
 export ANTHROPIC_API_KEY='...'
 export ANTHROPIC_MODEL='claude-opus-5'
@@ -130,9 +130,26 @@ This repository is an integration example, not a production authorization servic
 
 - [`src/app.py`](src/app.py) — complete A2A approval adapter
 - [`docs/protocol.md`](docs/protocol.md) — protocol behavior and production guidance
+- [`docs/verification.md`](docs/verification.md) — exact local, real-model, and live SAM test evidence
 - [`docs/email-to-george.md`](docs/email-to-george.md) — concise send-ready answer
 - [`deploy/kubernetes.yaml`](deploy/kubernetes.yaml) — environment-neutral Kubernetes example
 - [`tests/test_state_machine.py`](tests/test_state_machine.py) — approval and denial state tests
+- [`tests/test_http_flow.py`](tests/test_http_flow.py) — HTTP, streaming, and execute-only-after-approval assertions
+- [`tests/verify_real_model.py`](tests/verify_real_model.py) — optional end-to-end verification against the configured real model endpoint
+
+## Verification
+
+```bash
+pytest -q tests
+```
+
+With the app running and real model credentials configured:
+
+```bash
+A2A_URL=http://127.0.0.1:8080 python tests/verify_real_model.py
+```
+
+The verifier requires `submitted → input-required`, successful approval execution, safe denial for `don't approve`, and zero pending approvals after each flow.
 
 ## License
 

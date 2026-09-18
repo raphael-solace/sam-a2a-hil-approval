@@ -4,6 +4,7 @@
 import asyncio
 import json
 import os
+import re
 import time
 import uuid
 
@@ -50,7 +51,7 @@ async def agent_card(request: Request):
         "name": "A2A Tool Approval Example",
         "description": "External A2A agent that pauses protected tool execution for approval in SAM Chat.",
         "url": public_base(request) + "/",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "protocolVersion": "0.3.0",
         "capabilities": {"streaming": True, "pushNotifications": False, "stateTransitionHistory": True},
         "defaultInputModes": ["text/plain"],
@@ -102,11 +103,20 @@ def execute_approved_tool(name: str, arguments: dict) -> str:
 
 
 def classify_decision(text: str):
-    value = text.strip().lower()
-    if any(phrase in value for phrase in ("yes", "approve", "proceed", "go ahead", "confirm")):
-        return True
-    if any(phrase in value for phrase in ("no", "deny", "reject", "cancel")):
+    value = re.sub(r"[^a-z\s]", " ", text.strip().lower())
+    value = " ".join(value.split())
+    denial_patterns = (
+        r"^(no|deny|denied|reject|rejected|cancel|cancelled|canceled)$",
+        r"^(no|do not|don t|please do not|please don t) (approve|proceed|execute|run|confirm)( it)?$",
+    )
+    approval_patterns = (
+        r"^(yes|approve|approved|proceed|confirm|confirmed)$",
+        r"^(yes please|yes approve|go ahead|please proceed|please approve|approve it|run it|execute it)$",
+    )
+    if any(re.fullmatch(pattern, value) for pattern in denial_patterns):
         return False
+    if any(re.fullmatch(pattern, value) for pattern in approval_patterns):
+        return True
     return None
 
 
